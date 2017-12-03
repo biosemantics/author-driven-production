@@ -1,0 +1,2 @@
+serviceClass: edu.arizona.biosemantics.client.GreetingService
+path: 2D2732CBB32984F194DA6CE332C13CF8.gwt.rpc
