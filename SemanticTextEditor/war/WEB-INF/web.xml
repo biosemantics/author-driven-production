@@ -12,7 +12,7 @@
 
 	<servlet-mapping>
 		<servlet-name>greetServlet</servlet-name>
-		<url-pattern>/semantictexteditor/greet</url-pattern>
+		<url-pattern>/semantictexteditor/connect</url-pattern>
 	</servlet-mapping>
 
 	<!-- Default page to serve -->
