@@ -27,6 +27,8 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.Hor
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.HtmlEditor;
 
+import edu.arizona.biosemantics.shared.FieldVerifier;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */

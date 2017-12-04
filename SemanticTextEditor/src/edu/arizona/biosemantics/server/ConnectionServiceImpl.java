@@ -2,6 +2,11 @@ package edu.arizona.biosemantics.server;
 
 import edu.arizona.biosemantics.client.ConnectionService;
 import edu.arizona.biosemantics.shared.FieldVerifier;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -10,36 +15,49 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class ConnectionServiceImpl extends RemoteServiceServlet implements ConnectionService {
 
-	public String greetServer(String input) throws IllegalArgumentException {
-		// Verify that the input is valid. 
-		if (!FieldVerifier.isValidName(input)) {
-			// If the input is not valid, throw an IllegalArgumentException back to
-			// the client.
-			throw new IllegalArgumentException("Name must be at least 4 characters long");
-		}
+  	private static final String SUCCESS = "Yes";
+  	
+	OWLAccessorImpl accessor = new OWLAccessorImpl("https://raw.githubusercontent.com/pato-ontology/pato/master/pato.owl");
 
-		String serverInfo = getServletContext().getServerInfo();
-		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
+	
+	public List<String> sendWord(String token) throws IllegalArgumentException {
+	
+	    return accessor.getExactSynoymsfromMap(token);
+		  
+	}
+	public String loadMap(String load) throws IllegalArgumentException {
+		
+		accessor.MapLabelsToExactSynoyms(); 
+		
+        return SUCCESS;
+	}
+	@Override
+	public List<String> sendSentence(String list) {
 
-		// Escape data from the client to avoid cross-site script vulnerabilities.
-		input = escapeHtml(input);
-		userAgent = escapeHtml(userAgent);
+		ArrayList<String> tokenizedTextFromTextArea = tokenizeSentence(list);
 
-		return "Hello, " + input + "!<br><br>I am running " + serverInfo + ".<br><br>It looks like you are using:<br>"
-				+ userAgent;
+	    for (int counter = 0; counter < tokenizedTextFromTextArea.size(); counter++) { 	
+	          System.out.println(tokenizedTextFromTextArea.get(counter)); 
+	          //System.out.println(accessor.getExactSynoymsfromMap(tokenizedTextFromTextArea.get(counter))); 	          
+	    }
+	    
+		return tokenizedTextFromTextArea;
+		
 	}
 
-	/**
-	 * Escape an html string. Escaping data received from the client helps to
-	 * prevent cross-site script vulnerabilities.
-	 * 
-	 * @param html the html string to escape
-	 * @return the escaped string
-	 */
-	private String escapeHtml(String html) {
-		if (html == null) {
-			return null;
-		}
-		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-	}
+	private ArrayList<String> tokenizeSentence(String sentence) {
+		String token = null;
+	    StringTokenizer stringTokenizer = 
+	             new StringTokenizer(sentence,",  .");  
+	     ArrayList<String> tokens = new ArrayList<String>();
+	      
+	      while (stringTokenizer.hasMoreElements()) {
+	    	    token = stringTokenizer.nextElement().toString();
+	        //System.out.println(token);
+	        tokens.add(token);            
+	      }
+	    return tokens;
+	 }
+		
+	
 }

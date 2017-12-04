@@ -1,5 +1,7 @@
 package edu.arizona.biosemantics.client;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -10,5 +12,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("connect")
 public interface ConnectionService extends RemoteService {
-	String greetServer(String name) throws IllegalArgumentException;
+	List<String> sendSentence(String sentence);
+	List<String> sendWord(String token);
+          String loadMap(String load);
 }
