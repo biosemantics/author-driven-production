@@ -1,26 +1,50 @@
 package edu.arizona.biosemantics.client;
 
-import edu.arizona.biosemantics.shared.FieldVerifier;
+
+import java.util.List;
+import java.util.ListIterator;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.HtmlEditor;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class SemanticTextEditor implements EntryPoint {
+	
+	protected static final int MIN_HEIGHT = 710;
+	protected static final int MIN_WIDTH = 560;
+    HtmlEditor htmlEditor = new HtmlEditor();
+    
+    FramedPanel framedPanel = null;
+    VerticalPanel verticalPanel = null;
+    HorizontalPanel horizontalPanel = null;
+    HorizontalLayoutContainer container1 = null;
+    HorizontalLayoutContainer container2 = null;
+	RichTextArea area1 = null;
+	RichTextArea area2 = null;
+
+
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -31,29 +55,32 @@ public class SemanticTextEditor implements EntryPoint {
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
-	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+	private final ConnectionServiceAsync connectionService = GWT.create(ConnectionService.class);
 
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		final Button sendButton = new Button("Send");
-		final TextBox nameField = new TextBox();
-		nameField.setText("GWT User");
+
+		myWidget();
+		initServer();
+
+        final Button sendWordButton = new Button("Send Word");
+        final Button sendSentenceButton = new Button("Send Sentence");
+
 		final Label errorLabel = new Label();
 
 		// We can add style names to widgets
-		sendButton.addStyleName("sendButton");
+		sendWordButton.addStyleName("sendButton");
+		sendSentenceButton.addStyleName("sendButton");
+
 
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
-		RootPanel.get("nameFieldContainer").add(nameField);
-		RootPanel.get("sendButtonContainer").add(sendButton);
-		RootPanel.get("errorLabelContainer").add(errorLabel);
+		RootPanel.get("sendButtonContainer").add(sendWordButton);
+		RootPanel.get("sendButtonContainer").add(sendSentenceButton);
 
 		// Focus the cursor on the name field when the app loads
-		nameField.setFocus(true);
-		nameField.selectAll();
 
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
@@ -65,11 +92,11 @@ public class SemanticTextEditor implements EntryPoint {
 		final Label textToServerLabel = new Label();
 		final HTML serverResponseLabel = new HTML();
 		VerticalPanel dialogVPanel = new VerticalPanel();
-		dialogVPanel.addStyleName("dialogVPanel");
-		dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
-		dialogVPanel.add(textToServerLabel);
-		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-		dialogVPanel.add(serverResponseLabel);
+		//dialogVPanel.addStyleName("dialogVPanel");
+		//dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
+		//dialogVPanel.add(textToServerLabel);
+		//dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
+		//dialogVPanel.add(serverResponseLabel);
 		dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
 		dialogVPanel.add(closeButton);
 		dialogBox.setWidget(dialogVPanel);
@@ -78,46 +105,42 @@ public class SemanticTextEditor implements EntryPoint {
 		closeButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				dialogBox.hide();
-				sendButton.setEnabled(true);
-				sendButton.setFocus(true);
+				sendWordButton.setEnabled(true);
+				sendWordButton.setFocus(true);
+				sendSentenceButton.setEnabled(true);
+				sendSentenceButton.setFocus(true);
 			}
 		});
-
+		
 		// Create a handler for the sendButton and nameField
-		class MyHandler implements ClickHandler, KeyUpHandler {
+		class MyHandler1 implements ClickHandler {
 			/**
 			 * Fired when the user clicks on the sendButton.
 			 */
+			
+	
+		
 			public void onClick(ClickEvent event) {
-				sendNameToServer();
-			}
-
-			/**
-			 * Fired when the user types in the nameField.
-			 */
-			public void onKeyUp(KeyUpEvent event) {
-				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-					sendNameToServer();
-				}
+				sendWordToServer();
 			}
 
 			/**
 			 * Send the name from the nameField to the server and wait for a response.
 			 */
-			private void sendNameToServer() {
+			private void sendWordToServer() {
 				// First, we validate the input.
 				errorLabel.setText("");
-				String textToServer = nameField.getText();
+				String textToServer = htmlEditor.getTextArea().getText();
 				if (!FieldVerifier.isValidName(textToServer)) {
 					errorLabel.setText("Please enter at least four characters");
 					return;
 				}
 
 				// Then, we send the input to the server.
-				sendButton.setEnabled(false);
+				sendWordButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
-				greetingService.greetServer(textToServer, new AsyncCallback<String>() {
+				connectionService.sendWord(textToServer, new AsyncCallback<List<String>>() {
 					public void onFailure(Throwable caught) {
 						// Show the RPC error message to the user
 						dialogBox.setText("Remote Procedure Call - Failure");
@@ -132,15 +155,149 @@ public class SemanticTextEditor implements EntryPoint {
 						serverResponseLabel.removeStyleName("serverResponseLabelError");
 						serverResponseLabel.setHTML(result);
 						dialogBox.center();
-						closeButton.setFocus(true);
+						closeButton.setFocus(false);
+					}
+
+					@Override
+					public void onSuccess(List<String> synonyms) {
+						
+						//dialogBox.setText("Remote Procedure Call");
+						ListIterator<String> itrList = null;
+						itrList = synonyms.listIterator();	
+						RichTextArea.Formatter formatter1 = htmlEditor.getTextArea().getFormatter();
+					    area1.setVisible(true);
+					    
+						RichTextArea.Formatter formatter2 = area1.getFormatter();
+
+						area1.setHTML("");
+						formatter2.insertHTML("Synonyms: <br />");
+						while(itrList.hasNext()) {
+							formatter2.insertHTML("<br>&emsp;&emsp;--->"+"   "+itrList.next()+"<br />\n");
+						}		
+						dialogBox.setText(area1.getText());
+						dialogBox.center();
+						closeButton.setFocus(false);						
 					}
 				});
 			}
+
+		}
+
+		// Create a handler for the sendButton and nameField
+		class MyHandler2 implements ClickHandler {
+			/**
+			 * Fired when the user clicks on the sendButton.
+			 */
+			
+	
+		
+			public void onClick(ClickEvent event) {
+				sendSentenceToServer();
+			}
+
+			/**
+			 * Send the name from the nameField to the server and wait for a response.
+			 */
+			private void sendSentenceToServer() {
+			  // First, we validate the input.
+		  	  errorLabel.setText("");
+				
+	           String textFromTextArea = htmlEditor.getTextArea().getText();	
+			   if (!FieldVerifier.isValidName(textFromTextArea)) {
+					errorLabel.setText("Please enter at least four characters");
+					return;
+			   }
+
+				// Then, we send the input to the server.
+				sendSentenceButton.setEnabled(false);			     
+				connectionService.sendSentence(textFromTextArea, new AsyncCallback<List<String>>() {
+				
+			  	  public void onFailure(Throwable caught) {
+				  	  // Show the RPC error message to the user
+					  dialogBox.setText("Remote Procedure Call - Failure");
+					  serverResponseLabel.addStyleName("serverResponseLabelError");
+					  serverResponseLabel.setHTML(SERVER_ERROR);
+					  dialogBox.center();
+					  closeButton.setFocus(true);
+				  }
+
+				  @Override
+				  public void onSuccess(List<String> synonyms) {
+					
+				  	  //dialogBox.setText("Remote Procedure Call");
+					  ListIterator<String> itrList = null;
+					  itrList = synonyms.listIterator();						
+					  RichTextArea.Formatter formatter1 = htmlEditor.getTextArea().getFormatter();
+				      area1.setVisible(true);
+					  RichTextArea.Formatter formatter2 = area1.getFormatter();
+					  area1.setHTML("");
+					  formatter2.insertHTML("Synonyms: <br />");
+					  while(itrList.hasNext()) {
+						formatter2.insertHTML("<br>&emsp;&emsp;--->"+"   "+itrList.next()+"<br />\n");
+					  }	
+					  dialogBox.center();
+					  closeButton.setFocus(true);
+				  }	  
+		        });
+			} //sendSentenceToServer
 		}
 
 		// Add a handler to send the name to the server
-		MyHandler handler = new MyHandler();
-		sendButton.addClickHandler(handler);
-		nameField.addKeyUpHandler(handler);
+		MyHandler1 handler1 = new MyHandler1();
+		sendWordButton.addClickHandler(handler1);
+		MyHandler2 handler2 = new MyHandler2();
+		sendSentenceButton.addClickHandler(handler2);
 	}
+	public Widget myWidget() {
+		
+
+	    
+  	    verticalPanel = new VerticalPanel();
+	    verticalPanel.setWidth("100%");
+	    verticalPanel.setHeight("300%");
+	    
+	    	  area1 = new RichTextArea();
+	    	  area2 = new RichTextArea();
+	    	  
+		  htmlEditor.setAllowTextSelection(true);
+	      htmlEditor.setEnableColors(true);
+	     	      
+	      
+	      container1 = new HorizontalLayoutContainer();	
+	      container1.add(new FieldLabel(area1), new HorizontalLayoutData(350, 300, new Margins(20,-40,0,0))); 
+	      container1.add(new FieldLabel(htmlEditor), new HorizontalLayoutData(1, 1, new Margins(10,0,-450,0))); 
+	      container1.add(new FieldLabel(area2), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40))); 
+
+	      area1.setVisible(false);
+	      area2.setVisible(false);
+	      
+	      //framedPanel.add(container1);
+	      //framedPanel.setHeight(MIN_HEIGHT);
+	      //framedPanel.setWidth(MIN_WIDTH);
+
+	      verticalPanel.add(container1);  
+          verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+          verticalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);  
+	
+          RichTextArea.Formatter formatterArea1 = area1.getFormatter();
+          RichTextArea.Formatter formatterHtmlEditor = htmlEditor.getTextArea().getFormatter();
+          
+          RootPanel.get().add(verticalPanel);
+	  return verticalPanel;
+	}
+	
+	private void initServer() {
+		
+		connectionService.loadMap("load", new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub	
+			}
+			@Override
+			public void onSuccess(String result) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+    }
 }
