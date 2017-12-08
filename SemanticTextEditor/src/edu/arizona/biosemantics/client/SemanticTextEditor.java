@@ -8,6 +8,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -43,8 +45,8 @@ public class SemanticTextEditor implements EntryPoint {
     HorizontalPanel horizontalPanel = null;
     HorizontalLayoutContainer container1 = null;
     HorizontalLayoutContainer container2 = null;
-	RichTextArea area1 = null;
-	RichTextArea area2 = null;
+	RichTextArea areaLeft = null;
+	RichTextArea areaRight = null;
 
 
 	/**
@@ -167,16 +169,16 @@ public class SemanticTextEditor implements EntryPoint {
 						ListIterator<String> itrList = null;
 						itrList = synonyms.listIterator();	
 						RichTextArea.Formatter formatter1 = htmlEditor.getTextArea().getFormatter();
-					    area1.setVisible(true);
+						areaLeft.setVisible(true);
 					    
-						RichTextArea.Formatter formatter2 = area1.getFormatter();
+						RichTextArea.Formatter formatter2 = areaLeft.getFormatter();
 
-						area1.setHTML("");
+						areaLeft.setHTML("");
 						formatter2.insertHTML("Synonyms: <br />");
 						while(itrList.hasNext()) {
 							formatter2.insertHTML("<br>&emsp;&emsp;--->"+"   "+itrList.next()+"<br />\n");
 						}		
-						dialogBox.setText(area1.getText());
+						dialogBox.setText(areaLeft.getText());
 						dialogBox.center();
 						closeButton.setFocus(false);						
 					}
@@ -191,8 +193,6 @@ public class SemanticTextEditor implements EntryPoint {
 			 * Fired when the user clicks on the sendButton.
 			 */
 			
-	
-		
 			public void onClick(ClickEvent event) {
 				sendSentenceToServer();
 			}
@@ -230,9 +230,11 @@ public class SemanticTextEditor implements EntryPoint {
 					  ListIterator<String> itrList = null;
 					  itrList = synonyms.listIterator();						
 					  RichTextArea.Formatter formatter1 = htmlEditor.getTextArea().getFormatter();
-				      area1.setVisible(true);
-					  RichTextArea.Formatter formatter2 = area1.getFormatter();
-					  area1.setHTML("");
+					  
+					  
+					  areaLeft.setVisible(true);
+					  RichTextArea.Formatter formatter2 = areaLeft.getFormatter();
+					  areaLeft.setHTML("");
 					  formatter2.insertHTML("Synonyms: <br />");
 					  while(itrList.hasNext()) {
 						formatter2.insertHTML("<br>&emsp;&emsp;--->"+"   "+itrList.next()+"<br />\n");
@@ -244,6 +246,31 @@ public class SemanticTextEditor implements EntryPoint {
 			} //sendSentenceToServer
 		}
 
+		
+		htmlEditor.getTextArea().addKeyPressHandler(new KeyPressHandler() {
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+				int dotIndex = htmlEditor.getTextArea().getText().lastIndexOf(".");
+				int semiColonIndex = htmlEditor.getTextArea().getText().lastIndexOf(";");
+				if(event.getCharCode() == '.') {
+				  areaLeft.setText("");
+				  if(dotIndex > semiColonIndex) {   
+				    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(".") + 1).toString());
+				  }else {
+					areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(";") + 1).toString());
+				  }			  
+				}	
+				else if(event.getCharCode() == ';') {
+			      if(dotIndex > semiColonIndex) {   
+			    	    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(".") + 1).toString());
+				   } else {
+					areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(";") + 1).toString());
+				   }
+				}
+			}
+		});
+
+		
 		// Add a handler to send the name to the server
 		MyHandler1 handler1 = new MyHandler1();
 		sendWordButton.addClickHandler(handler1);
@@ -258,20 +285,20 @@ public class SemanticTextEditor implements EntryPoint {
 	    verticalPanel.setWidth("100%");
 	    verticalPanel.setHeight("300%");
 	    
-	    	  area1 = new RichTextArea();
-	    	  area2 = new RichTextArea();
+	    	  areaLeft = new RichTextArea();
+	    	  areaRight = new RichTextArea();
 	    	  
 		  htmlEditor.setAllowTextSelection(true);
 	      htmlEditor.setEnableColors(true);
 	     	      
 	      
 	      container1 = new HorizontalLayoutContainer();	
-	      container1.add(new FieldLabel(area1), new HorizontalLayoutData(350, 300, new Margins(20,-40,0,0))); 
+	      container1.add(new FieldLabel(areaLeft), new HorizontalLayoutData(350, 300, new Margins(20,-40,0,0))); 
 	      container1.add(new FieldLabel(htmlEditor), new HorizontalLayoutData(1, 1, new Margins(10,0,-450,0))); 
-	      container1.add(new FieldLabel(area2), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40))); 
+	      container1.add(new FieldLabel(areaRight), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40))); 
 
-	      area1.setVisible(false);
-	      area2.setVisible(false);
+	      areaLeft.setVisible(false);
+	      areaRight.setVisible(false);
 	      
 	      //framedPanel.add(container1);
 	      //framedPanel.setHeight(MIN_HEIGHT);
@@ -281,7 +308,7 @@ public class SemanticTextEditor implements EntryPoint {
           verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
           verticalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);  
 	
-          RichTextArea.Formatter formatterArea1 = area1.getFormatter();
+          RichTextArea.Formatter formatterAreaLeft = areaLeft.getFormatter();
           RichTextArea.Formatter formatterHtmlEditor = htmlEditor.getTextArea().getFormatter();
           
           RootPanel.get().add(verticalPanel);
