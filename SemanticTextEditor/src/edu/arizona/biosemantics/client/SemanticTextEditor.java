@@ -47,7 +47,7 @@ public class SemanticTextEditor implements EntryPoint {
     HorizontalLayoutContainer container2 = null;
 	RichTextArea areaLeft = null;
 	RichTextArea areaRight = null;
-
+	RichTextArea.Formatter colorFormatter = null;
 
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -175,7 +175,7 @@ public class SemanticTextEditor implements EntryPoint {
 						formatter2.insertHTML("Synonyms: <br />");
 						while(itrList.hasNext()) {
 							formatter2.insertHTML("<br>&emsp;&emsp;--->"+"   "+itrList.next()+"<br />\n");
-						}		
+						}	
 						dialogBox.setText(areaLeft.getText());
 						dialogBox.center();
 						closeButton.setFocus(false);						
@@ -242,8 +242,14 @@ public class SemanticTextEditor implements EntryPoint {
 		}
 
 		htmlEditor.getTextArea().addKeyPressHandler(new KeyPressHandler() {
+			
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
+				
+				colorFormatter = htmlEditor.getTextArea().getFormatter();
+				colorFormatter.setForeColor("#0000ff");
+				colorFormatter.setBackColor("#0ff000");
+				
 				int dotIndex = htmlEditor.getTextArea().getText().lastIndexOf(".");
 				int semiColonIndex = htmlEditor.getTextArea().getText().lastIndexOf(";");
 				if(event.getCharCode() == '.') {
@@ -270,6 +276,7 @@ public class SemanticTextEditor implements EntryPoint {
 		MyHandler2 handler2 = new MyHandler2();
 		sendSentenceButton.addClickHandler(handler2);
 	}
+	
 	public Widget myWidget() {
 		  
   	    verticalPanel = new VerticalPanel();
