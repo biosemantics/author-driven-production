@@ -21,9 +21,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.search.EntitySearcher;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
 
-
-//this message is for testing purpose
-
 /**
  * This class includes implemented methods being used to retrieve meaning of and
  * relationships among terms in PATO using OWL API. Keywords, synonyms, and
@@ -44,9 +41,11 @@ public class OWLAccessorImpl implements OWLAccessor {
     private String key;
     private String value; 
     private HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
-
     private Iterator<OWLAnnotation> itrKey; 
-	
+
+	/**
+	 * Constructor that takes ontology URL
+	 */	
 	public OWLAccessorImpl(String ontoURL) {
 		manager = OWLManager.createOWLOntologyManager();
 		df = manager.getOWLDataFactory();
@@ -59,6 +58,9 @@ public class OWLAccessorImpl implements OWLAccessor {
 		}
 	}
 
+	/**
+	 * Constructor that takes file name
+	 */	
 	public OWLAccessorImpl(File file) {
 		manager = OWLManager.createOWLOntologyManager();
 		df = manager.getOWLDataFactory();
@@ -71,46 +73,58 @@ public class OWLAccessorImpl implements OWLAccessor {
 		}
 	}
     
+	/**
+	 * Place each label(key) into hash map. 
+	 * Each label has a list (value) that contains the exact synonyms
+	 */		
 	@SuppressWarnings("deprecation")
-	public void MapLabelsToExactSynoyms() {
+	public boolean mapLabelsToExactSynonyms() {
+		
       for (OWLClass cls : ont.getClassesInSignature()) {
-    	  
         // Get the annotations on the class that use the label property
         	set = getLabels(cls);
         itrKey = set.iterator();
         
-    		if(itrKey.hasNext()){
+    		if (itrKey.hasNext()){    		
     	      key  = getRefinedOutput(itrKey.next().toString());
     	      Set<OWLAnnotation> set = getExactSynonyms(getClassByLabel(key));
     	      Iterator<OWLAnnotation> itrValue = set.iterator();
     	      List<String> synyoyms = new ArrayList<String>();    
-
+    	      
     	      while(itrValue.hasNext()) {
         	    value = getRefinedOutput(itrValue.next().toString()); 
-        	    synyoyms.add(value);
-        	    
-        	    
+        	    synyoyms.add(value); 	    
     	      }
       	  hashMap.put(key, synyoyms);
-
         }   
       }
-      System.out.println("Loading is done!");
+	return true;
 	}
-	public List<String> getExactSynoymsfromMap(String token ) {
+	
+	/**
+	 * Return exact synonyms given a term
+	 */		
+	public List<String> getExactSynonymsfromMap(String token) {
 		System.out.println(hashMap.get(token).toString());
 		return hashMap.get(token);	
 	}
-	public Set<OWLAnnotation> getLabels(OWLClass c) {
-		return EntitySearcher.getAnnotations(c,ont,df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI())).collect(Collectors.toSet()); 
-	}
 	
+	/**
+	 * Return set of annotations given a OWLClass
+	 */		
+	public Set<OWLAnnotation> getLabels(OWLClass cls) {
+		return EntitySearcher.getAnnotations(cls,ont,df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI())).collect(Collectors.toSet()); 
+	}
+
+	/**
+	 * Return label given a OWLClass
+	 */		
 	@Override
-	public String getLabel(OWLClass c) {
-		if (this.getLabels(c).isEmpty()) {
+	public String getLabel(OWLClass cls) {
+		if (this.getLabels(cls).isEmpty()) {
 			return "";
 		} else {
-			OWLAnnotation label = (OWLAnnotation) this.getLabels(c).toArray()[0];
+			OWLAnnotation label = (OWLAnnotation) this.getLabels(cls).toArray()[0];
 			return this.getRefinedOutput(label.getValue().toString());
 		}
 	}
@@ -132,17 +146,26 @@ public class OWLAccessorImpl implements OWLAccessor {
 		return origin.replaceAll("\\^\\^xsd:string", "").replaceAll("\"", "")
 				.replaceAll("\\.", "");
 	}
+	
+	
+	/**
+	 * Return OWLClass given a label
+	 */	
 	@Override
-	public OWLClass getClassByLabel(String l) {
-		for (OWLClass c : this.getAllClasses()) {
-			if (this.getLabel(c).trim().toLowerCase()
-					.equals(l.trim().toLowerCase())) {
-				return c;
+	public OWLClass getClassByLabel(String label) {
+		for (OWLClass cls : this.getAllClasses()) {
+			if (this.getLabel(cls).trim().toLowerCase()
+					.equals(label.trim().toLowerCase())) {
+				return cls;
 			}
 		}
 		return null;
 	}
 	
+	
+	/**
+	 * Return OWLClass ID given OWLClass
+	 */	
 	@Override
 	public String getID(OWLClass c) {
 		 Set<OWLAnnotation> ids = (Set<OWLAnnotation>) EntitySearcher.getAnnotations(c,ont,df.getOWLAnnotationProperty(IRI
@@ -165,7 +188,9 @@ public class OWLAccessorImpl implements OWLAccessor {
 	}
 	
 
-
+	/**
+	 * Return all classes in the Ontology
+	 */
 	@SuppressWarnings("deprecation")
 	@Override
 	public Set<OWLClass> getAllClasses() {
