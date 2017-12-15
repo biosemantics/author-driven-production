@@ -129,7 +129,7 @@ public class OWLAccessorImpl implements OWLAccessor {
 		}
 	}
 
-	/**
+	/****************************************************************************
 	 * Remove the non-readable or non-meaningful characters in the retrieval
 	 * from OWL API, and return the refined output.
 	 */
