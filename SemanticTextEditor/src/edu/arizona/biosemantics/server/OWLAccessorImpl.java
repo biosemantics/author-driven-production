@@ -110,7 +110,7 @@ public class OWLAccessorImpl implements OWLAccessor {
 	}
 	
 	/**
-	 * Return set of annotations given a OWLClass
+	 * Return a set of labels given a OWLClass
 	 */		
 	public Set<OWLAnnotation> getLabels(OWLClass cls) {
 		return EntitySearcher.getAnnotations(cls,ont,df.getOWLAnnotationProperty(OWLRDFVocabulary.RDFS_LABEL.getIRI())).collect(Collectors.toSet()); 
@@ -197,6 +197,30 @@ public class OWLAccessorImpl implements OWLAccessor {
 		// TODO Auto-generated method stub
 		return ont.getClassesInSignature();
 	}
+	
+	/**
+	 * 
+	 */	
+	public Set<OWLClass> getClassesUseSynonyms (String exactSynonym){
+		
+		return null;
+	}
+	/**
+	 * 
+	 */
+	public boolean isClassLabel(String label) {
+				
+		return false;	
+	}
+	
+	/**
+	 * 
+	 */
+	public List<OWLClass> getAncestralPath(OWLClass cls){
+		
+		return null;
+	}
+
 	
 	@Override
 	public List<OWLClass> retrieveConcept(String con) {
