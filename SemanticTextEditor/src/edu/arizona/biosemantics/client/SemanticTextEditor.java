@@ -65,7 +65,7 @@ public class SemanticTextEditor implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-
+		
 		myWidget();
 		initServer();
 
@@ -121,9 +121,7 @@ public class SemanticTextEditor implements EntryPoint {
 			/**
 			 * Fired when the user clicks on the sendButton.
 			 */
-			
 	
-		
 			public void onClick(ClickEvent event) {
 				sendWordToServer();
 			}
@@ -201,74 +199,69 @@ public class SemanticTextEditor implements EntryPoint {
 			 * Send the name from the nameField to the server and wait for a response.
 			 */
 			private void sendSentenceToServer() {
-			  // First, we validate the input.
-		  	  errorLabel.setText("");
+				// First, we validate the input.
+				errorLabel.setText("");
 				
-	           String textFromTextArea = htmlEditor.getTextArea().getText();	
-			   if (!FieldVerifier.isValidName(textFromTextArea)) {
-					errorLabel.setText("Please enter at least four characters");
+	            String textFromTextArea = htmlEditor.getTextArea().getText();	
+			    if (!FieldVerifier.isValidName(textFromTextArea)) {
+			    	    errorLabel.setText("Please enter at least four characters");
 					return;
-			   }
-
+			    }
 				// Then, we send the input to the server.
 				sendSentenceButton.setEnabled(false);			     
 				connectionService.sendSentence(textFromTextArea, new AsyncCallback<List<String>>() {
 				
-			  	  public void onFailure(Throwable caught) {
-				  	  // Show the RPC error message to the user
-					  dialogBox.setText("Remote Procedure Call - Failure");
-					  serverResponseLabel.addStyleName("serverResponseLabelError");
-					  serverResponseLabel.setHTML(SERVER_ERROR);
-					  dialogBox.center();
-					  closeButton.setFocus(true);
-				  }
+			  	public void onFailure(Throwable caught) {
+			  		// Show the RPC error message to the user
+					dialogBox.setText("Remote Procedure Call - Failure");
+					serverResponseLabel.addStyleName("serverResponseLabelError");
+					serverResponseLabel.setHTML(SERVER_ERROR);
+					dialogBox.center();
+					closeButton.setFocus(true);
+				}
 
-				  @Override
-				  public void onSuccess(List<String> synonyms) {
-					
-				  	  //dialogBox.setText("Remote Procedure Call");
-					  ListIterator<String> itrList = null;
-					  itrList = synonyms.listIterator();						
-					  RichTextArea.Formatter formatter1 = htmlEditor.getTextArea().getFormatter();
-					  
-					  
-					  areaLeft.setVisible(true);
-					  RichTextArea.Formatter formatter2 = areaLeft.getFormatter();
-					  areaLeft.setHTML("");
-					  formatter2.insertHTML("Synonyms: <br />");
-					  while(itrList.hasNext()) {
+				@Override
+				public void onSuccess(List<String> synonyms) {
+					//dialogBox.setText("Remote Procedure Call");
+					ListIterator<String> itrList = null;
+					itrList = synonyms.listIterator();						
+				     RichTextArea.Formatter formatter1 = htmlEditor.getTextArea().getFormatter();
+				  
+					areaLeft.setVisible(true);
+					RichTextArea.Formatter formatter2 = areaLeft.getFormatter();
+					areaLeft.setHTML("");
+					formatter2.insertHTML("Synonyms: <br />");
+					while(itrList.hasNext()) {
 						formatter2.insertHTML("<br>&emsp;&emsp;--->"+"   "+itrList.next()+"<br />\n");
-					  }	
-					  dialogBox.center();
-					  closeButton.setFocus(true);
+					}	
+					dialogBox.center();
+					closeButton.setFocus(true);
 				  }	  
 		        });
 			} //sendSentenceToServer
 		}
 
-		
 		htmlEditor.getTextArea().addKeyPressHandler(new KeyPressHandler() {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				int dotIndex = htmlEditor.getTextArea().getText().lastIndexOf(".");
 				int semiColonIndex = htmlEditor.getTextArea().getText().lastIndexOf(";");
 				if(event.getCharCode() == '.') {
-				  areaLeft.setText("");
-				  if(dotIndex > semiColonIndex) {   
-				    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(".") + 1).toString());
-				  }else {
-					areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(";") + 1).toString());
-				  }			  
-				}	
-				else if(event.getCharCode() == ';') {
-			      if(dotIndex > semiColonIndex) {   
-			    	    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(".") + 1).toString());
+					areaLeft.setText("");
+				    if(dotIndex > semiColonIndex) {
+				    	    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(".") + 1).toString());
+				    }else {
+					    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(";") + 1).toString());
+				    }			  
+				}else if(event.getCharCode() == ';') {
+					if(dotIndex > semiColonIndex) {   
+			    	        areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(".") + 1).toString());
 				   } else {
-					areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(";") + 1).toString());
+					   areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(";") + 1).toString());
 				   }
 				}
-			}
-		});
+			} // onKeyPress
+		}); // htmlEditor
 
 		
 		// Add a handler to send the name to the server
@@ -278,54 +271,61 @@ public class SemanticTextEditor implements EntryPoint {
 		sendSentenceButton.addClickHandler(handler2);
 	}
 	public Widget myWidget() {
-		
-
-	    
+		  
   	    verticalPanel = new VerticalPanel();
 	    verticalPanel.setWidth("100%");
 	    verticalPanel.setHeight("300%");
 	    
-	    	  areaLeft = new RichTextArea();
-	    	  areaRight = new RichTextArea();
+	    	areaLeft = new RichTextArea();
+	    	areaRight = new RichTextArea();
 	    	  
-		  htmlEditor.setAllowTextSelection(true);
-	      htmlEditor.setEnableColors(true);
+		htmlEditor.setAllowTextSelection(true);
+	    htmlEditor.setEnableColors(true);
 	     	      
 	      
-	      container1 = new HorizontalLayoutContainer();	
-	      container1.add(new FieldLabel(areaLeft), new HorizontalLayoutData(350, 300, new Margins(20,-40,0,0))); 
-	      container1.add(new FieldLabel(htmlEditor), new HorizontalLayoutData(1, 1, new Margins(10,0,-450,0))); 
-	      container1.add(new FieldLabel(areaRight), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40))); 
+	    container1 = new HorizontalLayoutContainer();	
+	    container1.add(new FieldLabel(areaLeft), new HorizontalLayoutData(350, 300, new Margins(20,-40,0,0))); 
+	    container1.add(new FieldLabel(htmlEditor), new HorizontalLayoutData(1, 1, new Margins(10,0,-450,0))); 
+	    container1.add(new FieldLabel(areaRight), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40))); 
 
-	      areaLeft.setVisible(false);
-	      areaRight.setVisible(false);
+	    areaLeft.setVisible(false);
+	    areaRight.setVisible(false);
 	      
 	      //framedPanel.add(container1);
 	      //framedPanel.setHeight(MIN_HEIGHT);
 	      //framedPanel.setWidth(MIN_WIDTH);
 
-	      verticalPanel.add(container1);  
-          verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-          verticalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);  
+	    verticalPanel.add(container1);  
+        verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+        verticalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);  
 	
-          RichTextArea.Formatter formatterAreaLeft = areaLeft.getFormatter();
-          RichTextArea.Formatter formatterHtmlEditor = htmlEditor.getTextArea().getFormatter();
+        RichTextArea.Formatter formatterAreaLeft = areaLeft.getFormatter();
+        RichTextArea.Formatter formatterHtmlEditor = htmlEditor.getTextArea().getFormatter();
           
-          RootPanel.get().add(verticalPanel);
+        RootPanel.get().add(verticalPanel);
 	  return verticalPanel;
 	}
-	
+
+	/**
+	 * The RPC call that calls loadMap method
+	 * loadMap calls mapLabelsToExactSynonyms method
+	 * 
+	 * mapLabelsToExactSynonyms:
+	 * Place each label(key) into hash map. 
+	 * Each label has a list (value) that contains the exact synonyms
+	 */	
 	private void initServer() {
 		
-		connectionService.loadMap("load", new AsyncCallback<String>() {
+		connectionService.loadMap(new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub	
 			}
-			@Override
 			public void onSuccess(String result) {
-				// TODO Auto-generated method stub
-				
+				areaLeft.setVisible(true);
+				RichTextArea.Formatter formatter2 = areaLeft.getFormatter();
+				areaLeft.setHTML("");
+				formatter2.insertHTML(result);
 			}
 		});
     }

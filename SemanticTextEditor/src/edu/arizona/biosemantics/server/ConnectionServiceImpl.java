@@ -14,35 +14,27 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 @SuppressWarnings("serial")
 public class ConnectionServiceImpl extends RemoteServiceServlet implements ConnectionService {
-
-  	private static final String SUCCESS = "Yes";
   	
 	OWLAccessorImpl accessor = new OWLAccessorImpl("https://raw.githubusercontent.com/pato-ontology/pato/master/pato.owl");
-
-	
 	public List<String> sendWord(String token) throws IllegalArgumentException {
+	    return accessor.getExactSynonymsfromMap(token);	  
+	}
+	public String loadMap() throws IllegalArgumentException {
+		
+		if(accessor.mapLabelsToExactSynonyms()){
+		  return "Loading is successful!";
+		}else {
+		  return "Loading is failed!";		
+		}
+	}
 	
-	    return accessor.getExactSynoymsfromMap(token);
-		  
-	}
-	public String loadMap(String load) throws IllegalArgumentException {
-		
-		accessor.MapLabelsToExactSynoyms(); 
-		
-        return SUCCESS;
-	}
 	@Override
 	public List<String> sendSentence(String list) {
-
 		ArrayList<String> tokenizedTextFromTextArea = tokenizeSentence(list);
-
 	    for (int counter = 0; counter < tokenizedTextFromTextArea.size(); counter++) { 	
 	          System.out.println(tokenizedTextFromTextArea.get(counter)); 
-	          //System.out.println(accessor.getExactSynoymsfromMap(tokenizedTextFromTextArea.get(counter))); 	          
 	    }
-	    
-		return tokenizedTextFromTextArea;
-		
+		return tokenizedTextFromTextArea;	
 	}
 
 	private ArrayList<String> tokenizeSentence(String sentence) {
