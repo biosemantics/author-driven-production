@@ -255,15 +255,19 @@ public class SemanticTextEditor implements EntryPoint {
 				if(event.getCharCode() == '.') {
 					areaLeft.setText("");
 				    if(dotIndex > semiColonIndex) {
-				    	    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(".") + 1).toString());
+				    	    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.
+				    	    		getTextArea().getText().lastIndexOf(".") + 1).toString());
 				    }else {
-					    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(";") + 1).toString());
+					    areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.
+					    		getTextArea().getText().lastIndexOf(";") + 1).toString());
 				    }			  
 				}else if(event.getCharCode() == ';') {
 					if(dotIndex > semiColonIndex) {   
-			    	        areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(".") + 1).toString());
+			    	        areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.
+			    	        		getTextArea().getText().lastIndexOf(".") + 1).toString());
 				   } else {
-					   areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.getTextArea().getText().lastIndexOf(";") + 1).toString());
+					   areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.
+							   getTextArea().getText().lastIndexOf(";") + 1).toString());
 				   }
 				}
 			} // onKeyPress
