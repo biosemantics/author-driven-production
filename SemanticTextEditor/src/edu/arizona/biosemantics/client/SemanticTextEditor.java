@@ -249,7 +249,8 @@ public class SemanticTextEditor implements EntryPoint {
 				colorFormatter = htmlEditor.getTextArea().getFormatter();
 				colorFormatter.setForeColor("#0000ff");
 				colorFormatter.setBackColor("#0ff000");
-				
+				colorFormatter.insertHTML("<p>This text contains <sup>superscript</sup> text.</p>");
+
 				int dotIndex = htmlEditor.getTextArea().getText().lastIndexOf(".");
 				int semiColonIndex = htmlEditor.getTextArea().getText().lastIndexOf(";");
 				if(event.getCharCode() == '.') {
