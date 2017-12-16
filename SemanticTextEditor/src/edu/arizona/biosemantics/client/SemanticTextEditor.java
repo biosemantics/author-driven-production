@@ -40,14 +40,13 @@ public class SemanticTextEditor implements EntryPoint {
 	protected static final int MIN_WIDTH = 560;
     HtmlEditor htmlEditor = new HtmlEditor();
     
-    FramedPanel framedPanel = null;
-    VerticalPanel verticalPanel = null;
-    HorizontalPanel horizontalPanel = null;
-    HorizontalLayoutContainer container1 = null;
-    HorizontalLayoutContainer container2 = null;
-	RichTextArea areaLeft = null;
-	RichTextArea areaRight = null;
-	RichTextArea.Formatter colorFormatter = null;
+    FramedPanel framedPanel;
+    VerticalPanel verticalPanel;
+    HorizontalPanel horizontalPanel;
+    HorizontalLayoutContainer container;
+	RichTextArea areaLeft;
+	RichTextArea areaRight;
+	RichTextArea.Formatter colorFormatter;
 
 	/**
 	 * The message displayed to the user when the server cannot be reached or
@@ -66,9 +65,9 @@ public class SemanticTextEditor implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		
-		myWidget();
-		initServer();
-
+		this.wordEditorInterface();
+		this.initServerSide();
+		
         final Button sendWordButton = new Button("Send Word");
         final Button sendSentenceButton = new Button("Send Sentence");
 
@@ -117,7 +116,7 @@ public class SemanticTextEditor implements EntryPoint {
 		});
 		
 		// Create a handler for the sendButton and nameField
-		class MyHandler1 implements ClickHandler {
+		class WordHandler implements ClickHandler {
 			/**
 			 * Fired when the user clicks on the sendButton.
 			 */
@@ -186,7 +185,7 @@ public class SemanticTextEditor implements EntryPoint {
 		}
 
 		// Create a handler for the sendButton and nameField
-		class MyHandler2 implements ClickHandler {
+		class SentenceHandler implements ClickHandler {
 			/**
 			 * Fired when the user clicks on the sendButton.
 			 */
@@ -272,13 +271,17 @@ public class SemanticTextEditor implements EntryPoint {
 
 		
 		// Add a handler to send the name to the server
-		MyHandler1 handler1 = new MyHandler1();
-		sendWordButton.addClickHandler(handler1);
-		MyHandler2 handler2 = new MyHandler2();
-		sendSentenceButton.addClickHandler(handler2);
+		WordHandler wordHandler = new WordHandler();
+		sendWordButton.addClickHandler(wordHandler);
+		
+		SentenceHandler sentenceHandler = new SentenceHandler();
+		sendSentenceButton.addClickHandler(sentenceHandler);
 	}
-	
-	public Widget myWidget() {
+
+	/**
+	 * The skeleton interface for the word processor
+	 */	
+	public Widget wordEditorInterface() {
 		  
   	    verticalPanel = new VerticalPanel();
 	    verticalPanel.setWidth("100%");
@@ -286,31 +289,23 @@ public class SemanticTextEditor implements EntryPoint {
 	    
 	    	areaLeft = new RichTextArea();
 	    	areaRight = new RichTextArea();
-	    	  
+	    	
+		areaLeft.setVisible(false);
+		areaRight.setVisible(false);    	
+	    	
 		htmlEditor.setAllowTextSelection(true);
 	    htmlEditor.setEnableColors(true);
-	     	      
-	      
-	    container1 = new HorizontalLayoutContainer();	
-	    container1.add(new FieldLabel(areaLeft), new HorizontalLayoutData(350, 300, new Margins(20,-40,0,0))); 
-	    container1.add(new FieldLabel(htmlEditor), new HorizontalLayoutData(1, 1, new Margins(10,0,-450,0))); 
-	    container1.add(new FieldLabel(areaRight), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40))); 
+	     	         
+	    container = new HorizontalLayoutContainer();	
+	    container.add(new FieldLabel(areaLeft), new HorizontalLayoutData(350, 300, new Margins(20,-40,0,0))); 
+	    container.add(new FieldLabel(htmlEditor), new HorizontalLayoutData(1, 1, new Margins(10,0,-450,0))); 
+	    container.add(new FieldLabel(areaRight), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40))); 
 
-	    areaLeft.setVisible(false);
-	    areaRight.setVisible(false);
-	      
-	      //framedPanel.add(container1);
-	      //framedPanel.setHeight(MIN_HEIGHT);
-	      //framedPanel.setWidth(MIN_WIDTH);
-
-	    verticalPanel.add(container1);  
+	    verticalPanel.add(container);  
         verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
         verticalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);  
-	
-        RichTextArea.Formatter formatterAreaLeft = areaLeft.getFormatter();
-        RichTextArea.Formatter formatterHtmlEditor = htmlEditor.getTextArea().getFormatter();
-          
-        RootPanel.get().add(verticalPanel);
+     
+        RootPanel.get().add(verticalPanel); 
 	  return verticalPanel;
 	}
 
@@ -322,7 +317,7 @@ public class SemanticTextEditor implements EntryPoint {
 	 * Place each label(key) into hash map. 
 	 * Each label has a list (value) that contains the exact synonyms
 	 */	
-	private void initServer() {
+	private void initServerSide() {
 		
 		connectionService.loadMap(new AsyncCallback<String>() {
 			@Override
