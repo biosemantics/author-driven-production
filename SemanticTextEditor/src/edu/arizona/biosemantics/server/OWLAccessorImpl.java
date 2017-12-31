@@ -74,7 +74,7 @@ public class OWLAccessorImpl implements OWLAccessor {
 	}
     
 	/**
-	 * Place each label(key) into hash map. 
+	 * Place each label (key) into hash map. 
 	 * Each label has a list (value) that contains the exact synonyms
 	 */		
 	@SuppressWarnings("deprecation")
