@@ -96,9 +96,14 @@ public class OWLAccessorImpl implements OWLAccessor {
         	    synyoyms.add(value); 	    
     	      }
       	  hashMap.put(key, synyoyms);
-        }   
-      }
-	return true;
+        } // if   
+      }// for
+      
+      if (hashMap.isEmpty()) {
+    	       return false;
+    	  }else {
+    		   return true;
+      } 
 	}
 	
 	/**
