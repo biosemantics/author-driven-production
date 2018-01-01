@@ -245,10 +245,10 @@ public class SemanticTextEditor implements EntryPoint {
 			@Override
 			public void onKeyPress(KeyPressEvent event) {
 				
-				colorFormatter = htmlEditor.getTextArea().getFormatter();
-				colorFormatter.setForeColor("#0000ff");
-				colorFormatter.setBackColor("#0ff000");
-				colorFormatter.insertHTML("<p>This text contains <sup>superscript</sup> text.</p>");
+				//colorFormatter = htmlEditor.getTextArea().getFormatter();
+				//colorFormatter.setForeColor("#0000ff");
+				//colorFormatter.setBackColor("#0ff000");
+				//colorFormatter.insertHTML("<p>This text contains <sup>superscript</sup> text.</p>");
 
 				int dotIndex = htmlEditor.getTextArea().getText().lastIndexOf(".");
 				int semiColonIndex = htmlEditor.getTextArea().getText().lastIndexOf(";");
@@ -323,16 +323,16 @@ public class SemanticTextEditor implements EntryPoint {
 	 */	
 	private void initServerSide() {
 		
-		connectionService.loadMap(new AsyncCallback<String>() {
+		connectionService.callMappingLabelsToExactSynonyms(new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub	
 			}
-			public void onSuccess(String result) {
+			public void onSuccess(Boolean result) {
 				areaLeft.setVisible(true);
 				RichTextArea.Formatter formatter2 = areaLeft.getFormatter();
 				areaLeft.setHTML("");
-				formatter2.insertHTML(result);
+				formatter2.insertHTML("Success");
 			}
 		});
     }
