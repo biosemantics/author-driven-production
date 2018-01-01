@@ -102,11 +102,7 @@ public class OWLAccessorImpl implements OWLAccessor {
             } // if   
         }// for
         
-	       if (!hashMap.isEmpty()) {
-	           return true;
-    	   }else{
-    	       return false;
-        } 
+	       return !hashMap.isEmpty() ? true : false;
 	   }
 	
 	   /**
