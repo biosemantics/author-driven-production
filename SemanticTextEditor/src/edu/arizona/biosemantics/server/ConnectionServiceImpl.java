@@ -19,12 +19,14 @@ public class ConnectionServiceImpl extends RemoteServiceServlet implements Conne
 	public List<String> sendWord(String token) throws IllegalArgumentException {
 	    return accessor.getExactSynonymsfromMap(token);	  
 	}
-	public String callMappingLabelsToExactSynonyms() throws IllegalArgumentException {
+	public boolean callMappingLabelsToExactSynonyms() throws IllegalArgumentException {
 		
 		if(accessor.mapLabelsToExactSynonyms()){
-		  return "Loading is successful!";
+		    System.out.println("Loading is successful!");
+		    return true;
 		}else {
-		  return "Loading is failed!";		
+            System.out.println("Loading is failed!");	
+            return false;
 		}
 	}
 	
