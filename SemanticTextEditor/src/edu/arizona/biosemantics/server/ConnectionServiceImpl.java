@@ -4,6 +4,7 @@ import edu.arizona.biosemantics.client.ConnectionService;
 import edu.arizona.biosemantics.shared.FieldVerifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -17,15 +18,21 @@ public class ConnectionServiceImpl extends RemoteServiceServlet implements Conne
   	
 	OWLAccessorImpl accessor = new OWLAccessorImpl("https://raw.githubusercontent.com/pato-ontology/pato/master/pato.owl");
 	public List<String> sendWord(String token) throws IllegalArgumentException {
-	    return accessor.getExactSynonymsfromMap(token);	  
+	    
+	    if(accessor.isClassLabel(token)) {
+	        return accessor.getExactSynonymsfromMap(token);    	        
+	    }else {
+	        List<String> list =  Arrays.asList("There is no Synonym"); 
+	        return list;       
+	    }	    
 	}
 	public boolean callMappingLabelsToExactSynonyms() throws IllegalArgumentException {
 		
 		if(accessor.mapLabelsToExactSynonyms()){
-		    System.out.println("Loading is successful!");
+		    System.out.println("Loading of map is successful!");
 		    return true;
 		}else {
-            System.out.println("Loading is failed!");	
+            System.out.println("Loading of map is failed!");	
             return false;
 		}
 	}

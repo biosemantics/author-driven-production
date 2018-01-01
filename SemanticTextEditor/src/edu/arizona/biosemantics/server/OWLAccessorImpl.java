@@ -214,8 +214,11 @@ public class OWLAccessorImpl implements OWLAccessor {
 	 * 
 	 */
 	public boolean isClassLabel(String label) {
-				
-		return false;	
+        if(hashMap.get(label) == null) {
+            return false;
+	     }else {    
+	        return true;
+	     }
 	}
 	
 	/**
