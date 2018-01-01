@@ -221,7 +221,7 @@ public class OWLAccessorImpl implements OWLAccessor {
      */
     public boolean isClassLabel(String label) {
         
-        return hashMap.get(label) == null ? false : true;        
+        return hashMap.get(label) != null ? true : false;        
     }
     
     /**
