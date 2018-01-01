@@ -14,5 +14,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface ConnectionService extends RemoteService {
 	List<String> sendSentence(String sentence);
 	List<String> sendWord(String token);
-          String loadMap();
+         boolean callMappingLabelsToExactSynonyms();
 }

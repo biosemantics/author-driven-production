@@ -11,5 +11,5 @@ public interface ConnectionServiceAsync {
 
 	void sendSentence(String sentence, AsyncCallback<List<String>> callback) throws IllegalArgumentException;;
 	void sendWord(String token, AsyncCallback<List<String>> callback) throws IllegalArgumentException;;
-	void loadMap(AsyncCallback<String> callback);;
+	void callMappingLabelsToExactSynonyms(AsyncCallback<Boolean> callback) throws IllegalArgumentException;;
 }

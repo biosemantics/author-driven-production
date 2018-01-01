@@ -33,15 +33,12 @@ import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
  * Modified by Erman Gurses
  */
 public class OWLAccessorImpl implements OWLAccessor {
-
-	private OWLOntologyManager manager;
-	private OWLDataFactory df;
-	private OWLOntology ont;
-	private Set<OWLAnnotation> set;
-    private String key;
-    private String value; 
+    
+    private OWLOntologyManager manager;
+    private OWLDataFactory df;
+    private OWLOntology ont;
+    private Set<OWLAnnotation> set;
     private HashMap<String, List<String>> hashMap = new HashMap<String, List<String>>();
-    private Iterator<OWLAnnotation> itrKey; 
 
 	/**
 	 * Constructor that takes ontology URL
@@ -80,29 +77,32 @@ public class OWLAccessorImpl implements OWLAccessor {
 	@SuppressWarnings("deprecation")
 	public boolean mapLabelsToExactSynonyms() {
 		
-      for (OWLClass cls : ont.getClassesInSignature()) {
+	    Iterator<OWLAnnotation> iterKey; 
+		String key, value;
+	    
+	    for (OWLClass cls : ont.getClassesInSignature()) {
         // Get the annotations on the class that use the label property
         	set = getLabels(cls);
-        itrKey = set.iterator();
+        	iterKey = set.iterator();
         
-    		if (itrKey.hasNext()){    		
-    	      key  = getRefinedOutput(itrKey.next().toString());
+    		if (iterKey.hasNext()){    		
+    	      key  = getRefinedOutput(iterKey.next().toString());
     	      Set<OWLAnnotation> set = getExactSynonyms(getClassByLabel(key));
-    	      Iterator<OWLAnnotation> itrValue = set.iterator();
+    	      Iterator<OWLAnnotation> iterValue = set.iterator();
     	      List<String> synyoyms = new ArrayList<String>();    
     	      
-    	      while(itrValue.hasNext()) {
-        	    value = getRefinedOutput(itrValue.next().toString()); 
+    	      while(iterValue.hasNext()) {
+        	    value = getRefinedOutput(iterValue.next().toString()); 
         	    synyoyms.add(value); 	    
     	      }
       	  hashMap.put(key, synyoyms);
         } // if   
       }// for
       
-      if (hashMap.isEmpty()) {
-    	       return false;
+      if (!hashMap.isEmpty()) {
+    	       return true;
     	  }else {
-    		   return true;
+    		   return false;
       } 
 	}
 	
