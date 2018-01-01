@@ -31,10 +31,10 @@ public class ConnectionServiceImpl extends RemoteServiceServlet implements Conne
     public boolean callMappingLabelsToExactSynonyms() throws IllegalArgumentException {
 		
         if(accessor.mapLabelsToExactSynonyms()){
-		          System.out.println("Loading of map is successful!");
+		          System.out.println("Loading the map is successful!");
 		          return true;
         } else {
-            System.out.println("Loading of map is failed!");	
+            System.out.println("Loading the map is failed!");	
             return false;
 		      }
     }
