@@ -21,9 +21,10 @@ public class ConnectionServiceImpl extends RemoteServiceServlet implements Conne
     public List<String> sendWord(String token) throws IllegalArgumentException {
         
         if(accessor.isClassLabel(token)) {
+            accessor.getClassesUseSynonyms();
             return accessor.getExactSynonymsfromMap(token);    	        
 	       } else {
-	           List<String> list =  Arrays.asList("There is no Synonym"); 
+	           List<String> list =  Arrays.asList("There is no synonym"); 
 	           return list;       
 	       }	    
 	   }

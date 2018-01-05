@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -209,6 +211,12 @@ public class OWLAccessorImpl implements OWLAccessor {
      * 
      */	
     public Set<OWLClass> getClassesUseSynonyms (String exactSynonym){
+        
+        for(Entry<String, List<String>> entry : hashMap.entrySet()){ 
+            System.out.printf("Key : %s and Value: %s %n", entry.getKey(), entry.getValue()); 
+        }
+
+        
         return null;
     }
     
