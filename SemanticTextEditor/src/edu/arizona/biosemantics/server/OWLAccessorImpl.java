@@ -211,13 +211,15 @@ public class OWLAccessorImpl implements OWLAccessor {
      * 
      */	
     public Set<OWLClass> getClassesUseSynonyms (String exactSynonym){
-        
+        Set<OWLClass> set  = null;
         for(Entry<String, List<String>> entry : hashMap.entrySet()){ 
-            System.out.printf("Key : %s and Value: %s %n", entry.getKey(), entry.getValue()); 
-        }
+            if(entry.getValue().contains(exactSynonym)) {          
+                set.add(getClassByLabel(entry.getKey())); 
+                System.out.printf("Key : %s and Value: %s %n", entry.getKey(), entry.getValue()); 
 
-        
-        return null;
+            }         
+        }    
+        return set;
     }
     
     /**

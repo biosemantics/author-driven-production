@@ -19,12 +19,12 @@ public class ConnectionServiceImpl extends RemoteServiceServlet implements Conne
     OWLAccessorImpl accessor = new OWLAccessorImpl("https://raw.githubusercontent.com/pato-ontology/pato/master/pato.owl");
 	
     public List<String> sendWord(String token) throws IllegalArgumentException {
-        
+
         if(accessor.isClassLabel(token)) {
-            accessor.getClassesUseSynonyms();
             return accessor.getExactSynonymsfromMap(token);    	        
 	       } else {
 	           List<String> list =  Arrays.asList("There is no synonym"); 
+	           accessor.getClassesUseSynonyms(token);
 	           return list;       
 	       }	    
 	   }
