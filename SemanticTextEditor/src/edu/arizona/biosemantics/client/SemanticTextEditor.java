@@ -22,12 +22,17 @@ import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.impl.TextBoxImpl;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.widget.core.client.FramedPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.HtmlEditor;
+import com.google.gwt.dom.client.Element;
 
 import edu.arizona.biosemantics.shared.FieldVerifier;
 
@@ -38,7 +43,9 @@ public class SemanticTextEditor implements EntryPoint {
 	
     protected static final int MIN_HEIGHT = 710;
     protected static final int MIN_WIDTH = 560;
+    
     HtmlEditor htmlEditor = new HtmlEditor();
+    private boolean initFlag = true;  
     
     FramedPanel framedPanel;
     VerticalPanel verticalPanel;
@@ -59,28 +66,36 @@ public class SemanticTextEditor implements EntryPoint {
     	 * Create a remote service proxy to talk to the server-side Greeting service.
     	 */
     	private final ConnectionServiceAsync connectionService = GWT.create(ConnectionService.class);
+    	private static TextBoxImpl impl = GWT.create(TextBoxImpl.class);
+
 
     	/**
     	 * This is the entry point method.
     	 */
+
     	public void onModuleLoad() {
+    	    
     	    this.wordEditorInterface();
-    	    	this.initServerSide();
-    		
-         final Button sendWordButton = new Button("Send Word");
-         final Button sendSentenceButton = new Button("Send Sentence");
-    		   final Label errorLabel = new Label();
+    	    if(initFlag) {
+             this.initServerSide();
+             initFlag = false;
+    	    }
+    	    final Button sendWordButton = new Button("Send Word");
+    	    final Button sendSentenceButton = new Button("Send Sentence");
+    	    final Label errorLabel = new Label();
     
          // We can add style names to widgets
          sendWordButton.addStyleName("sendButton");
          sendSentenceButton.addStyleName("sendButton");
     
     
+         
     	    	// Add the nameField and sendButton to the RootPanel
     		   // Use RootPanel.get() to get the entire body element
     		   RootPanel.get("sendButtonContainer").add(sendWordButton);
-    		   RootPanel.get("sendButtonContainer").add(sendSentenceButton);
-    
+    		   //RootPanel.get("sendButtonContainer").add(sendSentenceButton);
+
+    		   
     		   // Focus the cursor on the name field when the app loads
     
     	 	   // Create the popup dialog box
@@ -184,7 +199,7 @@ public class SemanticTextEditor implements EntryPoint {
         				     });
         			  }
         } // WordHandler
-    
+        		  
     		  // Create a handler for the sendButton and nameField
     		  class SentenceHandler implements ClickHandler {
     			 /**
@@ -243,16 +258,18 @@ public class SemanticTextEditor implements EntryPoint {
     		          }); // connectionService
     			     } //sendSentenceToServer
     		  } // SentenceHandler
-    		  
+    		   
     		  htmlEditor.getTextArea().addKeyPressHandler(new KeyPressHandler() {
     		      
     		      @Override
     		      public void onKeyPress(KeyPressEvent event) {
-    		          //colorFormatter = htmlEditor.getTextArea().getFormatter();
+    		          colorFormatter = htmlEditor.getTextArea().getFormatter();
     		          //colorFormatter.setForeColor("#0000ff");
     		          //colorFormatter.setBackColor("#0ff000");
     		          //colorFormatter.insertHTML("<p>This text contains <sup>superscript</sup> text.</p>");
     
+    		          //colorFormatter.insertHTML("<a href=\"http://www.yahoo.com\">The link in here</a>");
+    		          
     		          int dotIndex = htmlEditor.getTextArea().getText().lastIndexOf(".");
     		          int semiColonIndex = htmlEditor.getTextArea().getText().lastIndexOf(";");
             				if(event.getCharCode() == '.') {
@@ -271,7 +288,7 @@ public class SemanticTextEditor implements EntryPoint {
             				    }else{
             				        areaLeft.setText(htmlEditor.getTextArea().getText().substring(htmlEditor.
             							     getTextArea().getText().lastIndexOf(";") + 1).toString());
-            				   }
+            				    }
             				}
     			     } // onKeyPress
     		  }); // htmlEditor
@@ -282,7 +299,7 @@ public class SemanticTextEditor implements EntryPoint {
     		
     		  SentenceHandler sentenceHandler = new SentenceHandler();
     		  sendSentenceButton.addClickHandler(sentenceHandler);
-    }
+    } //on Module
 
     /**
      * The skeleton interface for the word processor
@@ -291,25 +308,24 @@ public class SemanticTextEditor implements EntryPoint {
         
     	    verticalPanel = new VerticalPanel();
     	    verticalPanel.setWidth("100%");
-         verticalPanel.setHeight("300%");
+    	    verticalPanel.setHeight("300%");
     	    
     	    areaLeft = new RichTextArea();
     	    areaRight = new RichTextArea();
     	    areaLeft.setVisible(false);
-    		   areaRight.setVisible(false);    	
-    	    	
-    	 	   htmlEditor.setAllowTextSelection(true);
+    	    areaRight.setVisible(false);
+    		   
+    		   htmlEditor.setAllowTextSelection(true);
     	    htmlEditor.setEnableColors(true);
     	     	         
     	    container = new HorizontalLayoutContainer();	
     	    container.add(new FieldLabel(areaLeft), new HorizontalLayoutData(350, 300, new Margins(20,-40,0,0))); 
     	    container.add(new FieldLabel(htmlEditor), new HorizontalLayoutData(1, 1, new Margins(10,0,-450,0))); 
-    	    container.add(new FieldLabel(areaRight), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40))); 
-    
+    	    container.add(new FieldLabel(areaRight), new HorizontalLayoutData(450, 300, new Margins(20,0,0,-40)));
     	    verticalPanel.add(container);  
-         verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-         verticalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);  
-         RootPanel.get().add(verticalPanel); 
+    	    verticalPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+    	    verticalPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+    	    RootPanel.get().add(verticalPanel); 
          
     	  return verticalPanel;
     }
@@ -318,7 +334,7 @@ public class SemanticTextEditor implements EntryPoint {
      * The RPC call that calls loadMap method
      * loadMap calls mapLabelsToExactSynonyms method
      * 
-     * mapLabelsToExactSynonyms:
+     * callMappingLabelsToExactSynonyms:
      * Place each label(key) into hash map. 
      * Each label has a list (value) that contains the exact synonyms
      */	
@@ -331,6 +347,7 @@ public class SemanticTextEditor implements EntryPoint {
     		      public void onSuccess(Boolean result) {
     		          areaLeft.setVisible(true);
     		          RichTextArea.Formatter formatter2 = areaLeft.getFormatter();
+    		          
     		          areaLeft.setHTML("");
     			         formatter2.insertHTML("Success");
     			      }
