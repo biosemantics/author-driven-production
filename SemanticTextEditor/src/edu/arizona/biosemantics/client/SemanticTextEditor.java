@@ -66,8 +66,6 @@ public class SemanticTextEditor implements EntryPoint {
     	 * Create a remote service proxy to talk to the server-side Greeting service.
     	 */
     	private final ConnectionServiceAsync connectionService = GWT.create(ConnectionService.class);
-    	private static TextBoxImpl impl = GWT.create(TextBoxImpl.class);
-
 
     	/**
     	 * This is the entry point method.
