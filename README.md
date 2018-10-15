@@ -5,8 +5,8 @@ For this project, we are developing several software prototypes to study the fea
 
 Repository related to this project include:
 
-**Measurement Recorder
-**Text Editor and Matrix
-**Add2Ontology.
+1. Measurement Recorder
+2. Text Editor and Matrix
+3. Add2Ontology.
 
 Code in this repository is out-dated.
